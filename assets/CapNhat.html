@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luyện Nghe - Viết</title>
+    <style>
+        /* Giữ nguyên phần CSS của bạn */
+    </style>
+</head>
+<body>
+
+<!-- Ẩn phần nhập file thủ công -->
+<!--
+<input type="file" id="fileInput" accept=".xlsx" />
+<button id="importButton" onclick="importFile()">Nhập Từ Vựng</button>
+-->
+
+<div style="text-align: center;">
+    <div id="questionCounter">Câu hỏi: 0/0</div>
+</div>
+<div id="vocabLabel">Không có từ vựng nào được thêm.</div>
+<input type="text" id="answerInput" placeholder="Nhập câu trả lời của bạn..." onkeydown="handleKeyDown(event)" />
+<input type="text" id="writingCheckBack" placeholder="Nhập câu trả lời mặt sau..." onkeydown="handleKeyDownBack(event)" />
+<div id="buttonContainer">
+    <button id="checkAnswerButton" onclick="checkAnswer()">Kiểm Tra Mặt Trước</button>
+    <button id="checkAnswerBackButton" onclick="checkAnswerBack()">Kiểm Tra Mặt Sau</button>
+</div>
+<div id="notification"></div>
+
+<button onclick="prevWord()">Trước</button>
+<button onclick="flipCard()">Lật Thẻ</button>
+<button onclick="nextWord()">Tiếp Theo</button>
+<button id="repeatButton" onclick="repeatPronunciation()">Lặp Lại</button>
+<button id="autoFlipButton" onclick="toggleAutoFlip()">Tự Động</button>
+<select id="delay" onchange="updateDelay()">
+    <option value="2">2s</option>
+    <option value="4" selected>4s</option>
+    <option value="6">6s</option>
+</select>
+<button id="toggleModeButton" onclick="toggleMode()">Thứ Tự</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+
+<script>
+    let vocabList = [];
+    let currentIndex = 0;
+    let autoFlip = false;
+    let audio;
+    let autoFlipTimeout;
+    let isFront = true;
+    let currentPronunciationText = '';
+    let isRandomMode = false;
+    let progressInterval;
+    let delayTime = 6000;
+
+    async function loadVocabFromGitHub() {
+        const url = "https://raw.githubusercontent.com/username/repository-name/main/vocab/lesson1.xlsx"; // Thay đổi đường dẫn này
+        try {
+            const response = await fetch(url);
+            const data = await response.arrayBuffer();
+            const workbook = XLSX.read(new Uint8Array(data), { type: 'array' });
+
+            const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+            vocabList = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+
+            if (vocabList.length > 0) {
+                vocabList.shift(); // Bỏ qua dòng tiêu đề
+                currentIndex = 0;
+                displayWord();
+            } else {
+                document.getElementById('vocabLabel').innerText = "Không tìm thấy từ vựng nào.";
+            }
+        } catch (error) {
+            console.error("Lỗi khi tải file từ GitHub:", error);
+            document.getElementById('vocabLabel').innerText = "Lỗi khi tải file từ GitHub.";
+        }
+    }
+
+    // Giữ nguyên các hàm khác của bạn (displayWord, playPronunciation, checkAnswer, v.v.)
+
+    window.onload = function () {
+        loadVocabFromGitHub(); // Tải từ vựng từ GitHub khi trang được tải
+    };
+</script>
+</body>
+</html>
