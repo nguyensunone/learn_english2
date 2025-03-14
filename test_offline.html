@@ -189,9 +189,9 @@
     let isRandomMode = false;
     let progressInterval;
     let delayTime = 6000;
-
+    //https://github.com/nguyensunone/learn_english2/blob/main/Vocab/TQT_100.xlsx
     async function loadVocabFromGitHub() {
-        const url = "https://raw.githubusercontent.com/username/repository-name/main/vocab/lesson1.xlsx"; // Thay đổi đường dẫn này
+        const url = "https://raw.githubusercontent.com/nguyensunone/learn_english2/blob/main/Vocab/TQT_100.xlsx"; // Thay đổi đường dẫn này
         try {
             const response = await fetch(url);
             const data = await response.arrayBuffer();
