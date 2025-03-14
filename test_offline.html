@@ -145,11 +145,13 @@
 </head>
 <body>
 
-<!-- Ẩn phần nhập file thủ công -->
-<!--
-<input type="file" id="fileInput" accept=".xlsx" />
-<button id="importButton" onclick="importFile()">Nhập Từ Vựng</button>
--->
+<!-- Dropdown để chọn bài học -->
+<select id="lessonSelect" onchange="loadLesson()">
+    <option value="">Chọn bài học</option>
+    <option value="TQT_100.json">TQT_100</option>
+    <option value="read_write_TQT.json">read_write_TQT</option>
+    <!-- Thêm các bài học khác tại đây -->
+</select>
 
 <div style="text-align: center;">
     <div id="questionCounter">Câu hỏi: 0/0</div>
@@ -189,17 +191,23 @@
     let isRandomMode = false;
     let progressInterval;
     let delayTime = 6000;
-    
-    async function loadVocabFromGitHub() {
-        const url = "//https://github.com/nguyensunone/learn_english2/blob/main/vocab/TQT_100.xlsx"; // Thay đổi đường dẫn này
+
+    async function loadLesson() {
+        const lessonSelect = document.getElementById('lessonSelect');
+        const selectedFile = lessonSelect.value;
+
+        if (!selectedFile) {
+            document.getElementById('vocabLabel').innerText = "Vui lòng chọn bài học.";
+            return;
+        }
+
+        // Sử dụng đường dẫn tương đối
+        const url = `./vocab/${selectedFile}`;
         try {
             const response = await fetch(url);
-            const data = await response.arrayBuffer();
-            const workbook = XLSX.read(new Uint8Array(data), { type: 'array' });
+            const jsonData = await response.json();
 
-            const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-            vocabList = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
-
+            vocabList = jsonData;
             if (vocabList.length > 0) {
                 vocabList.shift(); // Bỏ qua dòng tiêu đề
                 currentIndex = 0;
@@ -208,8 +216,8 @@
                 document.getElementById('vocabLabel').innerText = "Không tìm thấy từ vựng nào.";
             }
         } catch (error) {
-            console.error("Lỗi khi tải file từ GitHub:", error);
-            document.getElementById('vocabLabel').innerText = "Lỗi khi tải file từ GitHub.";
+            console.error("Lỗi khi tải bài học:", error);
+            document.getElementById('vocabLabel').innerText = "Lỗi khi tải bài học.";
         }
     }
 
@@ -506,7 +514,7 @@
     };
 
     window.onload = function () {
-        loadVocabFromGitHub(); // Tải từ vựng từ GitHub khi trang được tải
+        // Không cần tải bài học tự động nữa, người dùng sẽ chọn từ dropdown
     };
 </script>
 </body>
